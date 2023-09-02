@@ -7,8 +7,7 @@ from haruka_bot.utils import (
     group_only,
 )
 from .data.lots_data import lots_data
-from plugins import while_list_handle
-from plugins.common_plugins_function import get_time_zone
+from plugins.common_plugins_function import get_time_zone, while_list_handle
 
 query_lots = on_command(
     "古守抽签", aliases={
