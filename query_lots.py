@@ -7,7 +7,7 @@ from haruka_bot.utils import (
     group_only,
 )
 from .data.lots_data import lots_data
-from plugins.common_plugins_function import get_time_zone, while_list_handle
+from plugins.common_plugins_function import get_time_zone, white_list_handle
 
 query_lots = on_command(
     "古守抽签", aliases={
@@ -38,7 +38,7 @@ query_lots = on_command(
 query_lots.__doc__ = """诸葛抽签"""
 query_lots.__help_type__ = None
 
-query_lots.handle()(while_list_handle("lots"))
+query_lots.handle()(white_list_handle("lots"))
 query_lots.handle()(group_only)
 
 # 当前抽签对应的时间 及所有抽签人数
