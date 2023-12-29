@@ -3,7 +3,7 @@ from protocol_adapter.adapter_type import AdapterGroupMessageEvent
 from protocol_adapter.protocol_adapter import ProtocolAdapter
 from nonebot import on_command
 from .data.lots_data import lots_data
-from plugins.common_plugins_function import white_list_handle
+from utils.permission import white_list_handle
 from utils import group_only, get_time_zone
 
 query_lots = on_command(
