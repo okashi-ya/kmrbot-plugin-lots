@@ -1,37 +1,44 @@
 import datetime
+from typing import Tuple, Any
 from protocol_adapter.adapter_type import AdapterGroupMessageEvent
 from protocol_adapter.protocol_adapter import ProtocolAdapter
-from nonebot import on_command
+from nonebot import on_command, on_regex
 from .data.lots_data import lots_data
+from nonebot.params import RegexGroup
 from utils.permission import white_list_handle
 from utils import group_only, get_time_zone
 
-query_lots = on_command(
-    "古守抽签", aliases={
-        "AA抽签",
-        "钢板抽签",
-        "铁板抽签",
-        "平板抽签",
-        "墙壁抽签",
-        "小森抽签",
-        "绝壁抽签",
-        "夏小姐抽签",
-        "夏诺雅抽签",
-        "-8000抽签",
-        "砧板抽签",
-        "空港抽签",
-        "古宝抽签",
-        "白菜抽签",
-        "uru抽签",
-        "giaogiao抽签",
-        "gaugau抽签",
-        "熊熊抽签",
-        "橘子抽签",
-        "114514抽签",
-        "1919810抽签",
-        "1145141919810抽签"},
+query_lots = on_regex(
+    pattern=r"^(.*)抽签$",
     priority=5,
 )
+
+lots_pre = {
+    "古守": "",
+    "AA": "",
+    "钢板": "",
+    "平板": "",
+    "墙壁": "",
+    "-8000": "",
+    "砧板": "",
+    "空港": "",
+    "古宝": "",
+    "小森": "小森是FCup哦！\n\n",
+    "绝壁": "夏诺雅：你才绝壁，你全家都绝壁，花Q！\n\n",
+    "夏小姐": "夏诺雅：nya~\n\n",
+    "夏诺雅": "夏诺雅：nya~\n\n",
+    "白菜": "白菜：ねえ、今どんな気持ち？\n\n",
+    "uru": "",
+    "giaogiao": "星熊uru：no giao\n\n",
+    "gaugau": "星熊uru：gaugau~\n\n",
+    "熊熊": "",
+    "橘子": "橘子前辈：快进字幕组！\n\n",
+    "mimo": "mimo：已经不是橘子的mimo了！\n\n",
+    "114514": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
+    "1919810": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
+    "1145141919810": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
+}
+
 query_lots.__doc__ = """古守抽签"""
 query_lots.__help_type__ = None
 
@@ -48,23 +55,14 @@ query_lots_data = {
 
 @query_lots.handle()
 async def _(
-    event: AdapterGroupMessageEvent
+        event: AdapterGroupMessageEvent,
+        params: Tuple[Any, ...] = RegexGroup(),
 ):
-    event_msg_extra_str = {
-        "小森抽签": "小森是FCup哦！\n\n",
-        "绝壁抽签": "夏诺雅：你才绝壁，你全家都绝壁，花Q！\n\n",
-        "夏小姐抽签": "夏诺雅：nya~\n\n",
-        "夏诺雅抽签": "夏诺雅：nya~\n\n",
-        "白菜抽签": "白菜：ねえ、今どんな気持ち？\n\n",
-        "giaogiao抽签": "星熊uru：no giao\n\n",
-        "gaugau抽签": "星熊uru：gaugau~\n\n",
-        "橘子抽签": "橘子前辈：快进字幕组！\n\n",
-        "114514抽签": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
-        "1919810抽签": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
-        "1145141919810抽签": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
-    }
     # 一个彩蛋
-    pre_str = event_msg_extra_str.get(str(event.message), "")
+    print(params)
+    pre_str = lots_pre.get(params[0])
+    if pre_str is None:
+        return await query_lots.finish()
 
     # 根据QQ号和今日时间决定一个唯一的签
     datetime_ymd = int(datetime.datetime.now(get_time_zone()).strftime('%Y%m%d'))
