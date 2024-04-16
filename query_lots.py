@@ -59,7 +59,6 @@ async def _(
         params: Tuple[Any, ...] = RegexGroup(),
 ):
     # 一个彩蛋
-    print(params)
     pre_str = lots_pre.get(params[0])
     if pre_str is None:
         return await query_lots.finish()
