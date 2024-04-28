@@ -2,8 +2,8 @@ import datetime
 from typing import Tuple, Any
 from protocol_adapter.adapter_type import AdapterGroupMessageEvent
 from protocol_adapter.protocol_adapter import ProtocolAdapter
-from nonebot import on_command, on_regex
-from .data.lots_data import lots_data
+from nonebot import on_regex
+from . import data
 from nonebot.params import RegexGroup
 from utils.permission import white_list_handle
 from utils import group_only, get_time_zone
@@ -13,35 +13,8 @@ query_lots = on_regex(
     priority=5,
 )
 
-lots_pre = {
-    "古守": "",
-    "AA": "",
-    "钢板": "",
-    "平板": "",
-    "墙壁": "",
-    "-8000": "",
-    "砧板": "",
-    "空港": "",
-    "古宝": "",
-    "nano": "切り抜かないで～\n\n",
-    "土豆": "切り抜かないで～\n\n",
-    "小森": "小森是FCup哦！\n\n",
-    "绝壁": "夏诺雅：你才绝壁，你全家都绝壁，花Q！\n\n",
-    "夏小姐": "夏诺雅：nya~\n\n",
-    "夏诺雅": "夏诺雅：nya~\n\n",
-    "白菜": "白菜：ねえ、今どんな気持ち？\n\n",
-    "uru": "",
-    "giaogiao": "星熊uru：no giao\n\n",
-    "gaugau": "星熊uru：gaugau~\n\n",
-    "熊熊": "",
-    "橘子": "橘子前辈：快进字幕组！\n\n",
-    "mimo": "mimo：已经不是橘子的mimo了！\n\n",
-    "114514": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
-    "1919810": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
-    "1145141919810": "哼！哼！哼！啊啊啊啊啊啊啊啊！！！！！\n\n",
-}
 
-query_lots.__doc__ = """古守抽签"""
+query_lots.__doc__ = """抽签"""
 query_lots.__help_type__ = None
 
 query_lots.handle()(white_list_handle("lots"))
@@ -61,7 +34,7 @@ async def _(
         params: Tuple[Any, ...] = RegexGroup(),
 ):
     # 一个彩蛋
-    pre_str = lots_pre.get(params[0])
+    pre_str = data.get_lots_pre(params[0])
     if pre_str is None:
         return await query_lots.finish()
 
@@ -82,10 +55,10 @@ async def _(
         # 因167342993是一个无理数 且datetime_ymd 比 167342993大的多
         # 所以不可能出现因时间原因导致大范围抽签结果相同的情况出现
         # 在几年内是不会出现重复问题的，够用
-        lots_key = (datetime_ymd * user_id) % 167342993 % len(lots_data)
-        lots_str = f"抽到第{lots_data[lots_key]['lots_value']}签\n" \
-                   f"签名：{lots_data[lots_key]['lots_name']}\n" \
-                   f"签语：{lots_data[lots_key]['lots_title']}\n" \
-                   f"解签：{lots_data[lots_key]['lots_meaning']}"
+        lots_info = data.get_lots_text_info((datetime_ymd * user_id) % 167342993)
+        lots_str = f"抽到第{lots_info['value']}签\n" \
+                   f"签名：{lots_info['name']}\n" \
+                   f"签语：{lots_info['title']}\n" \
+                   f"解签：{lots_info['meaning']}"
         msg = ProtocolAdapter.MS.reply(event) + ProtocolAdapter.MS.text(pre_str + lots_str)
         await query_lots.finish(msg)
