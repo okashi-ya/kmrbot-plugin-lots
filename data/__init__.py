@@ -16,8 +16,9 @@ def get_lots_pre(pre_name: str) -> Optional[str]:
     lots_data = load_lots_data()
     # 这里为了可以热更 就遍历了 反正也没多少
     for pre_info in lots_data.get("pre", []):
-        if pre_info["name"] == pre_name:
-            return pre_info["text"]
+        for name in pre_info["names"]:
+            if name == pre_name:
+                return pre_info["text"]
     return None
 
 
